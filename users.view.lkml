@@ -37,6 +37,23 @@ view: users {
     sql: ${TABLE}.created_at ;;
   }
 
+######## This will calculate the date difference between when a users was created
+######## and the date the item was purchased
+
+  dimension_group: timeframe_since_signed_up {
+    type: duration
+    sql_start: ${created_raw} ;;
+    sql_end: ${order_items.created_raw} ;;
+    intervals: [day, month, week, year]
+  }
+
+  dimension: months_since_signed_up {
+    type: tier
+    tiers: [0, 6, 12, 18, 24, 30, 36]
+    sql: ${months_timeframe_since_signed_up} ;;
+    style: integer
+  }
+
   dimension: email {
     type: string
     sql: ${TABLE}.email ;;
@@ -65,6 +82,12 @@ view: users {
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: user_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension: state {
